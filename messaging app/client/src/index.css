@@ -1,0 +1,462 @@
+/* Temel Ayarlar */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #121212;
+  color: #fff;
+  overflow: hidden;
+}
+
+.app-container {
+  display: flex;
+  height: 100dvh; /* vh yerine dvh (Dynamic Viewport Height) kullandık, mobilde adres çubuğuna göre kendini ayarlar */
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Sidebar (Sol Menü) */
+.sidebar {
+  width: 300px;
+  background: #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #333;
+}
+
+.profile-section {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  background: #252525;
+  transition: 0.3s;
+}
+
+.profile-section:hover {
+  background: #2d2d2d;
+}
+
+/* Mesaj Başlat Butonu ve Dropdown */
+.start-message-container {
+  padding: 15px;
+  position: relative;
+}
+
+.start-btn {
+  width: 100%;
+  padding: 12px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 15px;
+  transition: 0.3s;
+}
+
+.start-btn:hover { background: #45a049; transform: translateY(-1px); }
+
+.start-dropdown {
+  position: absolute;
+  top: 65px;
+  left: 15px;
+  right: 15px;
+  background: #2b2b2b;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+  z-index: 100;
+  max-height: 300px;
+  overflow-y: auto;
+  border: 1px solid #444;
+}
+
+.dropdown-item {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.dropdown-item:hover { background: #3d3d3d; }
+.dropdown-item img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+
+.create-group { color: #4CAF50; font-weight: bold; border-bottom: 1px solid #3d3d3d; }
+.dropdown-divider { padding: 8px 12px; font-size: 11px; color: #888; background: #242424; text-transform: uppercase; }
+
+/* Liste Elemanları */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 20px 5px 20px;
+  color: #888;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 10px;
+}
+
+.room-item, .friend-item {
+  padding: 12px;
+  margin: 2px 0;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: 0.2s;
+}
+
+.room-item:hover, .friend-item:hover { background: #2d2d2d; }
+.room-item.active, .friend-item.active { background: #333; color: #4CAF50; }
+
+.friend-avatar { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
+
+/* Chat Alanı */
+.chat-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #121212;
+  height: 100%;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 15px 25px;
+  background: #1e1e1e;
+  border-bottom: 1px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.room-info { font-size: 13px; color: #888; }
+.room-info strong { color: #4CAF50; }
+
+.messages {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background-image: radial-gradient(#222 1px, transparent 1px);
+  background-size: 20px 20px;
+  min-height: 0; /* Flexbox hatasını önler, mesajlar sonsuza kadar uzasa bile input'u ezmez */
+}
+
+/* Mesaj Balonları */
+.message-wrapper {
+  display: flex;
+  width: 100%;
+}
+
+.message-wrapper.me { justify-content: flex-end; }
+.message-wrapper.other { justify-content: flex-start; }
+
+.message-content {
+  max-width: 60%;
+  padding: 10px 15px;
+  border-radius: 12px;
+  position: relative;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+.me .message-content {
+  background: #005c4b;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.other .message-content {
+  background: #202c33;
+  color: white;
+  border-bottom-left-radius: 2px;
+}
+
+.message-content small {
+  display: block;
+  font-size: 11px;
+  color: #aaa;
+  margin-bottom: 4px;
+}
+
+.time {
+  display: block;
+  text-align: right;
+  font-size: 10px;
+  margin-top: 5px;
+  opacity: 0.7;
+}
+
+/* Input Alanı (Aşağıya Sabitleme Çözümü) */
+.input-area {
+  padding: 20px;
+  background: #1e1e1e;
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0; /* Bu komut input alanının ekrandan yok olmasını kesin olarak engeller */
+  padding-bottom: calc(20px + env(safe-area-inset-bottom)); /* iPhone'lardaki alttaki çizginin tasarımın üstüne binmesini engeller */
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px 18px;
+  border-radius: 25px;
+  border: none;
+  background: #2a2a2a;
+  color: white;
+  outline: none;
+}
+
+.input-area button {
+  padding: 0 25px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Modal Stilleri */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px);
+}
+
+.modal-content {
+  background: #242424;
+  padding: 25px;
+  border-radius: 15px;
+  width: 350px;
+  text-align: center;
+}
+
+.modal-content h4 { margin-bottom: 15px; }
+
+.modal-content input {
+  width: 100%;
+  padding: 12px;
+  margin: 15px 0;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #1a1a1a;
+  color: white;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.modal-buttons button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.confirm { background: #4CAF50; color: white; }
+
+/* Scrollbar Özelleştirme */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #444; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
+
+.welcome-screen {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #666;
+  font-size: 18px;
+}
+
+/* Okundu Bilgisi (Görüldü Avatarları) */
+.read-receipts {
+  display: flex;
+  justify-content: flex-end;
+  gap: 3px;
+  margin-top: 5px;
+  padding-top: 3px;
+  border-top: 1px solid rgba(255,255,255,0.1);
+}
+
+.seen-avatar {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  object-fit: cover;
+  opacity: 0.8;
+}
+
+/* =========================================
+   MOBİL (RESPONSIVE) TASARIM KODLARI
+========================================= */
+
+/* Hamburger Butonu ve Çarpı Butonu (Bilgisayarda Gizli Başlar) */
+.hamburger-btn, .close-sidebar-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+}
+.sidebar-mobile-header {
+  display: none;
+}
+.sidebar-overlay {
+  display: none;
+}
+
+/* Ekran boyutu 768px'den küçükse (Yani Telefonsa) bu kurallar çalışır */
+@media screen and (max-width: 768px) {
+  
+  /* Chat Alanı artık ekranı tam kaplasın */
+  .chat-area {
+    width: 100%;
+  }
+
+  /* Butonları telefonda göster */
+  .hamburger-btn {
+    display: inline-block;
+  }
+  .sidebar-mobile-header {
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+    border-bottom: 1px solid #333;
+  }
+  .close-sidebar-btn {
+    display: inline-block;
+  }
+
+  /* Sol Menü (Sidebar) Ayarları - Ekrana yandan kayarak gelecek */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -100%; /* Başlangıçta ekranın solunda saklı */
+    width: 280px; /* Genişliği */
+    height: 100%;
+    z-index: 1000;
+    transition: left 0.3s ease-in-out; /* Kayma animasyonu süresi */
+    box-shadow: 2px 0 15px rgba(0,0,0,0.5);
+  }
+
+  /* Kullanıcı Hamburger butona bastığında sidebar'a .open class'ı eklenir ve sola çekilir */
+  .sidebar.open {
+    left: 0;
+  }
+
+  /* Menü açıkken arkadaki chat kısmını karartan tül */
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 999;
+  }
+
+  /* Telefonda mesaj kutusu çok uzun kelimelerde taşmasın diye */
+  .message-content {
+    max-width: 85%;
+  }
+}
+/* --- AÇIK TEMA (LIGHT MODE) RENK DEĞİŞİMLERİ --- */
+.app-container.light {
+  background-color: #f0f2f5;
+  color: #111b21;
+}
+
+.app-container.light .sidebar {
+  background-color: #ffffff;
+  border-right: 1px solid #d1d7db;
+}
+
+.app-container.light .chat-area {
+  background-color: #e5ddd5; /* WhatsApp açık tema arka planı */
+}
+
+.app-container.light .message-wrapper.me .message-content {
+  background-color: #d9fdd3; /* Açık yeşil */
+  color: #111b21;
+}
+
+.app-container.light .message-wrapper.other .message-content {
+  background-color: #ffffff;
+  color: #111b21;
+}
+
+.app-container.light .input-area,
+.app-container.light .chat-header {
+  background-color: #f0f2f5;
+  border-color: #d1d7db;
+}
+
+.app-container.light .room-item,
+.app-container.light .friend-item,
+.app-container.light .section-header h3 {
+  color: #111b21;
+}
+
+.app-container.light .room-item:hover,
+.app-container.light .friend-item:hover {
+  background-color: #f5f6f6;
+}
+
+.app-container.light input {
+  background-color: #ffffff;
+  color: #111b21;
+  border: 1px solid #d1d7db;
+}
+/* --- AÇIK TEMA (LIGHT MODE) HASSAS DÜZELTMELER --- */
+
+/* 1. Sol üst profil kısmının arka planını açık gri yap */
+.app-container.light .profile-section {
+  background-color: #f0f2f5;
+  border-bottom: 1px solid #d1d7db; /* Altına şık bir çizgi */
+}
+
+/* Profildeki ana ismin rengini kesinlikle koyu yap */
+.app-container.light .profile-info div:first-child {
+  color: #111b21 !important;
+}
+
+/* 2. Seçili olan odanın (TestRoom) ve seçili kişinin arka planını açık gri yap */
+.app-container.light .room-item.active,
+.app-container.light .friend-item.active {
+  background-color: #ebebeb; /* WhatsApp tarzı aktif gri */
+  color: #111b21;
+  font-weight: bold; /* Seçili olduğu daha belli olsun */
+}
